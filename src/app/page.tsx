@@ -5,7 +5,7 @@ import LocationCard from "@/components/LocationCard";
 export const revalidate = 0;
 
 export default async function HomePage() {
-  const supabase = getSupabaseServerClient();
+  const supabase = await getSupabaseServerClient();
 
   const { data: locations } = await supabase
     .from("locations")
