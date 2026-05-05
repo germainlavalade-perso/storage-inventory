@@ -13,6 +13,16 @@ export type DetectedItem = {
 export async function detectItemsFromImageUrl(
   imageUrl: string
 ): Promise<DetectedItem[]> {
+  // Fetch image and encode as base64 (works with all SDK versions)
+  const imageRes = await fetch(imageUrl);
+  const buffer = await imageRes.arrayBuffer();
+  const base64 = Buffer.from(buffer).toString("base64");
+  const mimeType = (imageRes.headers.get("content-type") ?? "image/jpeg") as
+    | "image/jpeg"
+    | "image/png"
+    | "image/gif"
+    | "image/webp";
+
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
@@ -23,8 +33,9 @@ export async function detectItemsFromImageUrl(
           {
             type: "image",
             source: {
-              type: "url",
-              url: imageUrl,
+              type: "base64",
+              media_type: mimeType,
+              data: base64,
             },
           },
           {
